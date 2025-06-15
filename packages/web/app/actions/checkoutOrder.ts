@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import Stripe from "stripe";
 import { db } from "@/lib/db";
 import { CreateOrderSchema } from "@carhub/shared";
+import type { PrismaClient } from "@prisma/client";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2023-10-16",
@@ -68,31 +69,43 @@ export async function checkoutOrder(formData: FormData) {
     });
 
     // Create order in database transaction
-    const order = await db.$transaction(async (tx) => {
-      // Create the order
-      const newOrder = await tx.order.create({
-        data: {
-          amount: validatedData.amount,
-          buyerId: user.id,
-          listingId: validatedData.listingId,
-          stripePaymentIntentId: paymentIntent.id,
-          escrowStatus: "PENDING",
-        },
-        include: {
-          listing: {
-            include: {
-              car: true,
-              seller: true,
+    const order = await db.$transaction(
+      async (
+        tx: Omit<
+          PrismaClient,
+          | "$connect"
+          | "$disconnect"
+          | "$on"
+          | "$transaction"
+          | "$use"
+          | "$extends"
+        >
+      ) => {
+        // Create the order
+        const newOrder = await tx.order.create({
+          data: {
+            amount: validatedData.amount,
+            buyerId: user.id,
+            listingId: validatedData.listingId,
+            stripePaymentIntentId: paymentIntent.id,
+            escrowStatus: "PENDING",
+          },
+          include: {
+            listing: {
+              include: {
+                car: true,
+                seller: true,
+              },
             },
           },
-        },
-      });
+        });
 
-      // TODO: Send notifications to buyer and seller
-      // TODO: Create escrow record for fund management
+        // TODO: Send notifications to buyer and seller
+        // TODO: Create escrow record for fund management
 
-      return newOrder;
-    });
+        return newOrder;
+      }
+    );
 
     console.log("✅ Order created successfully:", order.id);
 
