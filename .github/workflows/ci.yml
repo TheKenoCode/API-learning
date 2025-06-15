@@ -1,0 +1,113 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: carhub_test
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8.15.0
+
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - name: Setup pnpm cache
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint code
+        run: pnpm lint
+
+      - name: Check formatting
+        run: pnpm format:check
+
+      - name: Type check
+        run: pnpm type-check
+
+      - name: Generate Prisma client
+        run: cd packages/db && pnpm db:generate
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/carhub_test
+
+      - name: Run Prisma migrations
+        run: cd packages/db && pnpm db:migrate
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/carhub_test
+
+      - name: Build Next.js app
+        run: cd packages/web && pnpm build
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/carhub_test
+          NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: pk_test_dummy
+          CLERK_SECRET_KEY: sk_test_dummy
+          STRIPE_SECRET_KEY: sk_test_dummy
+          NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: pk_test_dummy
+
+  docker-test:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Start Docker services
+        run: |
+          cd packages/infra
+          docker-compose up -d postgres minio
+          
+      - name: Wait for services
+        run: |
+          timeout 60 bash -c 'until docker-compose -f packages/infra/docker-compose.yml exec -T postgres pg_isready -U postgres; do sleep 1; done'
+          timeout 60 bash -c 'until curl -f http://localhost:9000/minio/health/live; do sleep 1; done'
+
+      - name: Run database tests
+        run: |
+          cd packages/infra
+          docker-compose exec -T postgres psql -U postgres -d carhub -c "SELECT 1;"
+
+      - name: Cleanup
+        if: always()
+        run: |
+          cd packages/infra
+          docker-compose down -v 

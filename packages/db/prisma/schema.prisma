@@ -1,0 +1,175 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id       String @id @default(cuid())
+  clerkId  String @unique
+  email    String @unique
+  name     String?
+  imageUrl String?
+
+  listings    Listing[]
+  orders      Order[]
+  events      Event[]
+  votes       Vote[]
+  scans       Scan[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("users")
+}
+
+model Car {
+  id          String  @id @default(cuid())
+  make        String
+  model       String
+  year        Int
+  vin         String  @unique
+  color       String?
+  mileage     Int?
+  description String?
+  glbUrl      String?
+
+  listings Listing[]
+  scans    Scan[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("cars")
+}
+
+model Listing {
+  id          String  @id @default(cuid())
+  title       String
+  description String?
+  price       Decimal
+  isActive    Boolean @default(true)
+
+  seller   User   @relation(fields: [sellerId], references: [id], onDelete: Cascade)
+  sellerId String
+
+  car   Car    @relation(fields: [carId], references: [id], onDelete: Cascade)
+  carId String
+
+  orders Order[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("listings")
+}
+
+model Order {
+  id                    String       @id @default(cuid())
+  amount                Decimal
+  escrowStatus          EscrowStatus @default(PENDING)
+  stripePaymentIntentId String?
+  coinbaseChargeId      String?
+
+  buyer   User   @relation(fields: [buyerId], references: [id], onDelete: Cascade)
+  buyerId String
+
+  listing   Listing @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  listingId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("orders")
+}
+
+model Event {
+  id          String  @id @default(cuid())
+  name        String
+  description String?
+  date        DateTime
+  location    String
+  isActive    Boolean @default(true)
+
+  organizer   User   @relation(fields: [organizerId], references: [id], onDelete: Cascade)
+  organizerId String
+
+  contests Contest[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("events")
+}
+
+model Contest {
+  id          String  @id @default(cuid())
+  name        String
+  description String?
+  isActive    Boolean @default(true)
+
+  event   Event  @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  eventId String
+
+  votes Vote[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("contests")
+}
+
+model Vote {
+  id     String @id @default(cuid())
+  rating Int    @default(1)
+
+  voter   User   @relation(fields: [voterId], references: [id], onDelete: Cascade)
+  voterId String
+
+  contest   Contest @relation(fields: [contestId], references: [id], onDelete: Cascade)
+  contestId String
+
+  createdAt DateTime @default(now())
+
+  @@unique([voterId, contestId])
+  @@map("votes")
+}
+
+model Scan {
+  id        String   @id @default(cuid())
+  scanType  ScanType
+  imageUrl  String?
+  reportUrl String?
+  verified  Boolean  @default(false)
+  notes     String?
+
+  scanner   User   @relation(fields: [scannerId], references: [id], onDelete: Cascade)
+  scannerId String
+
+  car   Car    @relation(fields: [carId], references: [id], onDelete: Cascade)
+  carId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("scans")
+}
+
+enum EscrowStatus {
+  PENDING
+  FUNDED
+  RELEASED
+  DISPUTED
+  REFUNDED
+}
+
+enum ScanType {
+  EXTERIOR
+  INTERIOR
+  ENGINE
+  UNDERCARRIAGE
+  DOCUMENTATION
+} 
