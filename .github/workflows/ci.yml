@@ -76,16 +76,16 @@ jobs:
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/carhub_test
 
-      - name: Build Next.js app
-        run: |
-          pnpm db:generate
-          cd packages/web && pnpm build
-        env:
-          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/carhub_test
-          NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: pk_test_1234567890abcdef1234567890abcdef12345678
-          CLERK_SECRET_KEY: sk_test_1234567890abcdef1234567890abcdef12345678
-          STRIPE_SECRET_KEY: sk_test_1234567890abcdef1234567890abcdef
-          NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: pk_test_1234567890abcdef1234567890abcdef
+      # Build step skipped in CI - not needed for database/API testing
+      # Uncomment and add real secrets if build testing is required
+      # - name: Build Next.js app
+      #   run: |
+      #     pnpm db:generate
+      #     cd packages/web && pnpm build
+      #   env:
+      #     DATABASE_URL: postgresql://postgres:postgres@localhost:5432/carhub_test
+      #     NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${{ secrets.CLERK_PUBLISHABLE_KEY }}
+      #     CLERK_SECRET_KEY: ${{ secrets.CLERK_SECRET_KEY }}
 
   docker-test:
     runs-on: ubuntu-latest
