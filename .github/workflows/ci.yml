@@ -65,7 +65,7 @@ jobs:
         run: pnpm type-check
 
       - name: Generate Prisma client
-        run: cd packages/db && pnpm db:generate
+        run: pnpm db:generate
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/carhub_test
 
