@@ -68,7 +68,7 @@ export async function checkoutOrder(formData: FormData) {
     });
 
     // Create order in database transaction
-    const order = await db.$transaction(async (tx: typeof db) => {
+    const order = await db.$transaction(async (tx) => {
       // Create the order
       const newOrder = await tx.order.create({
         data: {

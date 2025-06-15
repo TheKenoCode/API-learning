@@ -6,8 +6,8 @@ import { ZodError } from "zod";
 import { auth } from "@clerk/nextjs/server";
 import { db } from "@/lib/db";
 
-export const createTRPCContext = (opts: { req: NextRequest }) => {
-  const { userId } = auth();
+export const createTRPCContext = async (opts: { req: NextRequest }) => {
+  const { userId } = await auth();
 
   return {
     db,
