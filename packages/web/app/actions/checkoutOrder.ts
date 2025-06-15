@@ -1,6 +1,6 @@
 "use server";
 
-import { auth } from "@clerk/nextjs";
+import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import Stripe from "stripe";
 import { db } from "@/lib/db";
@@ -13,7 +13,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 export async function checkoutOrder(formData: FormData) {
   try {
     // Get authenticated user
-    const { userId } = auth();
+    const { userId } = await auth();
     if (!userId) {
       redirect("/sign-in");
     }
@@ -68,7 +68,7 @@ export async function checkoutOrder(formData: FormData) {
     });
 
     // Create order in database transaction
-    const order = await db.$transaction(async (tx) => {
+    const order = await db.$transaction(async (tx: typeof db) => {
       // Create the order
       const newOrder = await tx.order.create({
         data: {

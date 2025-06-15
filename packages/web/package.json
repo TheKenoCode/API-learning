@@ -10,6 +10,7 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
+    "@carhub/shared": "workspace:*",
     "@clerk/nextjs": "^6.22.0",
     "@coinbase/coinbase-sdk": "^0.0.15",
     "@prisma/client": "^5.8.1",

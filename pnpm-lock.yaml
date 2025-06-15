@@ -76,6 +76,9 @@ importers:
 
   packages/web:
     dependencies:
+      '@carhub/shared':
+        specifier: workspace:*
+        version: link:../shared
       '@clerk/nextjs':
         specifier: ^6.22.0
         version: 6.22.0(next@14.2.25)(react-dom@18.3.1)(react@18.3.1)
