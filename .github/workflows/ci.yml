@@ -82,10 +82,10 @@ jobs:
           cd packages/web && pnpm build
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/carhub_test
-          NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: pk_test_dummy
-          CLERK_SECRET_KEY: sk_test_dummy
-          STRIPE_SECRET_KEY: sk_test_dummy
-          NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: pk_test_dummy
+          NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: pk_test_1234567890abcdef1234567890abcdef12345678
+          CLERK_SECRET_KEY: sk_test_1234567890abcdef1234567890abcdef12345678
+          STRIPE_SECRET_KEY: sk_test_1234567890abcdef1234567890abcdef
+          NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: pk_test_1234567890abcdef1234567890abcdef
 
   docker-test:
     runs-on: ubuntu-latest
