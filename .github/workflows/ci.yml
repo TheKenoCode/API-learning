@@ -103,7 +103,7 @@ jobs:
       - name: Run database tests
         run: |
           cd packages/infra
-          docker compose exec -T postgres psql -U postgres -d carhub -c "SELECT 1;"
+          docker compose exec -T postgres psql -U postgres -d postgres -c "SELECT 1;"
 
       - name: Cleanup
         if: always()
