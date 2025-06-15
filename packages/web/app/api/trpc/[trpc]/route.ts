@@ -22,4 +22,4 @@ const handler = (req: NextRequest) =>
 
 export { handler as GET, handler as POST };
 
-export type AppRouter = typeof appRouter; 
+export type AppRouter = typeof appRouter;

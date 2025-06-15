@@ -1,5 +1,9 @@
 import { z } from "zod";
-import { createTRPCRouter, publicProcedure, protectedProcedure } from "@/server/api/trpc";
+import {
+  createTRPCRouter,
+  publicProcedure,
+  protectedProcedure,
+} from "@/server/api/trpc";
 
 export const listingRouter = createTRPCRouter({
   getAll: publicProcedure.query(({ ctx }) => {
@@ -21,12 +25,14 @@ export const listingRouter = createTRPCRouter({
     }),
 
   create: protectedProcedure
-    .input(z.object({
-      title: z.string(),
-      description: z.string(),
-      price: z.number(),
-      carId: z.string(),
-    }))
+    .input(
+      z.object({
+        title: z.string(),
+        description: z.string(),
+        price: z.number(),
+        carId: z.string(),
+      })
+    )
     .mutation(({ ctx, input }) => {
       // TODO: Implement listing creation
       return ctx.db.listing.create({
@@ -36,4 +42,4 @@ export const listingRouter = createTRPCRouter({
         },
       });
     }),
-}); 
+});

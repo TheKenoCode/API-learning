@@ -80,7 +80,8 @@ async function main() {
   const event1 = await prisma.event.create({
     data: {
       name: "CarHub Summer Show 2024",
-      description: "Annual car show featuring the best vehicles from our platform",
+      description:
+        "Annual car show featuring the best vehicles from our platform",
       date: new Date("2024-07-15T10:00:00Z"),
       location: "Downtown Convention Center",
       organizerId: user1.id,
@@ -103,6 +104,11 @@ async function main() {
     listings: 2,
     events: 1,
     contests: 1,
+    samples: {
+      listing1: listing1.id,
+      listing2: listing2.id,
+      contest1: contest1.id,
+    },
   });
 }
 
@@ -113,4 +119,4 @@ main()
   })
   .finally(async () => {
     await prisma.$disconnect();
-  }); 
+  });

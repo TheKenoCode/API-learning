@@ -105,7 +105,7 @@ export async function checkoutOrder(formData: FormData) {
     };
   } catch (error) {
     console.error("❌ Checkout error:", error);
-    
+
     if (error instanceof Error) {
       return {
         success: false,
@@ -118,4 +118,4 @@ export async function checkoutOrder(formData: FormData) {
       error: "An unexpected error occurred",
     };
   }
-} 
+}

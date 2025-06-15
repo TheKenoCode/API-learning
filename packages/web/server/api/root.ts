@@ -9,4 +9,4 @@ export const appRouter = createTRPCRouter({
   event: eventRouter,
 });
 
-export type AppRouter = typeof appRouter; 
+export type AppRouter = typeof appRouter;

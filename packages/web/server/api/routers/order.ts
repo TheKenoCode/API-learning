@@ -3,10 +3,12 @@ import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 
 export const orderRouter = createTRPCRouter({
   create: protectedProcedure
-    .input(z.object({
-      listingId: z.string(),
-      amount: z.number(),
-    }))
+    .input(
+      z.object({
+        listingId: z.string(),
+        amount: z.number(),
+      })
+    )
     .mutation(({ ctx, input }) => {
       // TODO: Implement order creation with escrow
       return ctx.db.order.create({
@@ -31,4 +33,4 @@ export const orderRouter = createTRPCRouter({
       },
     });
   }),
-}); 
+});

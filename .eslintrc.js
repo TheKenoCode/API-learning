@@ -1,9 +1,12 @@
 module.exports = {
   root: true,
+  env: {
+    node: true,
+    es2020: true,
+  },
   extends: [
     "eslint:recommended",
     "plugin:@typescript-eslint/recommended",
-    "next/core-web-vitals",
     "prettier",
   ],
   parser: "@typescript-eslint/parser",
@@ -17,4 +20,18 @@ module.exports = {
     "@typescript-eslint/no-explicit-any": "warn",
   },
   ignorePatterns: ["node_modules/", ".next/", "dist/"],
+  overrides: [
+    {
+      files: ["packages/web/**/*.{js,jsx,ts,tsx}"],
+      extends: ["next/core-web-vitals"],
+      settings: {
+        react: {
+          version: "detect",
+        },
+        next: {
+          rootDir: "packages/web/",
+        },
+      },
+    },
+  ],
 };

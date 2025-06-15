@@ -172,6 +172,6 @@ export function calculatePlatformFee(
 }
 
 // TODO: Add webhook handling for Stripe events
-// TODO: Add Coinbase Commerce webhook handling  
+// TODO: Add Coinbase Commerce webhook handling
 // TODO: Add dispute management utilities
-// TODO: Add multi-party payment splitting 
+// TODO: Add multi-party payment splitting

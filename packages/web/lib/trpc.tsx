@@ -8,7 +8,7 @@ import superjson from "superjson";
 
 import type { AppRouter } from "@/app/api/trpc/[trpc]/route";
 
-const createQueryClient = () => 
+const createQueryClient = () =>
   new QueryClient({
     defaultOptions: {
       queries: {
@@ -54,4 +54,4 @@ export function TRPCReactProvider(props: { children: React.ReactNode }) {
       </api.Provider>
     </QueryClientProvider>
   );
-} 
+}

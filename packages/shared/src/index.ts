@@ -3,18 +3,18 @@ import { z } from "zod";
 // Enums
 export const EscrowStatusEnum = z.enum([
   "PENDING",
-  "FUNDED", 
+  "FUNDED",
   "RELEASED",
   "DISPUTED",
-  "REFUNDED"
+  "REFUNDED",
 ]);
 
 export const ScanTypeEnum = z.enum([
   "EXTERIOR",
-  "INTERIOR", 
+  "INTERIOR",
   "ENGINE",
   "UNDERCARRIAGE",
-  "DOCUMENTATION"
+  "DOCUMENTATION",
 ]);
 
 // User schemas
@@ -31,7 +31,11 @@ export const CarSchema = z.object({
   id: z.string(),
   make: z.string(),
   model: z.string(),
-  year: z.number().int().min(1900).max(new Date().getFullYear() + 1),
+  year: z
+    .number()
+    .int()
+    .min(1900)
+    .max(new Date().getFullYear() + 1),
   vin: z.string().length(17),
   color: z.string().optional(),
   mileage: z.number().int().nonnegative().optional(),
@@ -52,9 +56,9 @@ export const ListingSchema = z.object({
   carId: z.string(),
 });
 
-export const CreateListingSchema = ListingSchema.omit({ 
-  id: true, 
-  sellerId: true 
+export const CreateListingSchema = ListingSchema.omit({
+  id: true,
+  sellerId: true,
 });
 
 // Order schemas
@@ -84,9 +88,9 @@ export const EventSchema = z.object({
   organizerId: z.string(),
 });
 
-export const CreateEventSchema = EventSchema.omit({ 
-  id: true, 
-  organizerId: true 
+export const CreateEventSchema = EventSchema.omit({
+  id: true,
+  organizerId: true,
 });
 
 // Contest schemas
@@ -108,9 +112,9 @@ export const VoteSchema = z.object({
   contestId: z.string(),
 });
 
-export const CreateVoteSchema = VoteSchema.omit({ 
-  id: true, 
-  voterId: true 
+export const CreateVoteSchema = VoteSchema.omit({
+  id: true,
+  voterId: true,
 });
 
 // Scan schemas
@@ -125,9 +129,9 @@ export const ScanSchema = z.object({
   carId: z.string(),
 });
 
-export const CreateScanSchema = ScanSchema.omit({ 
-  id: true, 
-  scannerId: true 
+export const CreateScanSchema = ScanSchema.omit({
+  id: true,
+  scannerId: true,
 });
 
 // Payment schemas
@@ -169,16 +173,16 @@ export type ScanType = z.infer<typeof ScanTypeEnum>;
 // Constants
 export const SUPPORTED_IMAGE_TYPES = [
   "image/jpeg",
-  "image/jpg", 
+  "image/jpg",
   "image/png",
-  "image/webp"
+  "image/webp",
 ] as const;
 
 export const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 
 export const SUPPORTED_3D_TYPES = [
   "model/gltf-binary",
-  "model/gltf+json"
+  "model/gltf+json",
 ] as const;
 
-export const MAX_3D_FILE_SIZE = 50 * 1024 * 1024; // 50MB 
+export const MAX_3D_FILE_SIZE = 50 * 1024 * 1024; // 50MB

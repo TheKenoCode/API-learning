@@ -12,7 +12,7 @@ const s3 = new AWS.S3({
 
 export const BUCKETS = {
   IMAGES: process.env.S3_BUCKET_IMAGES || "carhub-images",
-  MODELS: process.env.S3_BUCKET_MODELS || "carhub-models", 
+  MODELS: process.env.S3_BUCKET_MODELS || "carhub-models",
   DOCUMENTS: process.env.S3_BUCKET_DOCUMENTS || "carhub-documents",
 } as const;
 
@@ -117,13 +117,13 @@ export function generateFileKey(
   const timestamp = Date.now();
   const randomString = Math.random().toString(36).substring(2, 8);
   const fileExtension = originalName.split(".").pop();
-  
+
   const baseKey = `${userId}/${timestamp}-${randomString}`;
   const key = fileExtension ? `${baseKey}.${fileExtension}` : baseKey;
-  
+
   return prefix ? `${prefix}/${key}` : key;
 }
 
 // TODO: Add image optimization utilities
 // TODO: Add 3D model validation
-// TODO: Add progress tracking for large uploads 
+// TODO: Add progress tracking for large uploads
