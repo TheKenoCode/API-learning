@@ -1,6 +1,8 @@
 import { z } from "zod";
 
 // Enums
+export const UserRoleEnum = z.enum(["USER", "ADMIN", "MODERATOR"]);
+
 export const EscrowStatusEnum = z.enum([
   "PENDING",
   "FUNDED",
@@ -24,6 +26,7 @@ export const UserSchema = z.object({
   email: z.string().email(),
   name: z.string().optional(),
   imageUrl: z.string().optional(),
+  role: UserRoleEnum.default("USER"),
 });
 
 // Car schemas
@@ -152,6 +155,7 @@ export const CoinbaseChargeSchema = z.object({
 });
 
 // Utility types
+export type UserRole = z.infer<typeof UserRoleEnum>;
 export type User = z.infer<typeof UserSchema>;
 export type Car = z.infer<typeof CarSchema>;
 export type CreateCar = z.infer<typeof CreateCarSchema>;

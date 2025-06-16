@@ -13,6 +13,7 @@ model User {
   email    String @unique
   name     String?
   imageUrl String?
+  role     UserRole @default(USER)
 
   listings    Listing[]
   orders      Order[]
@@ -156,6 +157,12 @@ model Scan {
   updatedAt DateTime @updatedAt
 
   @@map("scans")
+}
+
+enum UserRole {
+  USER
+  ADMIN
+  MODERATOR
 }
 
 enum EscrowStatus {
