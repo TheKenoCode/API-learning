@@ -14,7 +14,7 @@ jobs:
       postgres:
         image: postgres:16-alpine
         env:
-          POSTGRES_DB: carhub_test
+          POSTGRES_DB: redline_test
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
         options: >-
@@ -60,7 +60,7 @@ jobs:
           pnpm db:generate
           cd packages/db && pnpm db:generate
         env:
-          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/carhub_test
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/redline_test
 
       - name: Lint code
         run: pnpm lint
@@ -74,7 +74,7 @@ jobs:
       - name: Run Prisma migrations
         run: cd packages/db && pnpm db:migrate
         env:
-          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/carhub_test
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/redline_test
 
       # Build step skipped in CI - not needed for database/API testing
       # Uncomment and add real secrets if build testing is required
@@ -83,7 +83,7 @@ jobs:
       #     pnpm db:generate
       #     cd packages/web && pnpm build
       #   env:
-      #     DATABASE_URL: postgresql://postgres:postgres@localhost:5432/carhub_test
+      #     DATABASE_URL: postgresql://postgres:postgres@localhost:5432/redline_test
       #     NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${{ secrets.CLERK_PUBLISHABLE_KEY }}
       #     CLERK_SECRET_KEY: ${{ secrets.CLERK_SECRET_KEY }}
 

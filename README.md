@@ -1,256 +1,350 @@
-# CarHub 🚗
+# Redline - Car Enthusiast Social Platform
 
-A premium car marketplace built with modern web technologies, featuring 3D car viewing, secure escrow payments, and real-time events.
+A full-stack social platform for car enthusiasts to create clubs, organize events, participate in challenges, and build their automotive community.
 
-## Features
+## 🚗 Project Overview
 
-- **🔧 Modern Stack**: Next.js 14 (App Router), TypeScript, Tailwind CSS, shadcn/ui
-- **🔐 Authentication**: Clerk integration with secure user management
-- **💳 Payments**: Stripe Connect (USD) + Coinbase Commerce (USDC)
-- **🗄️ Database**: PostgreSQL with Prisma ORM
-- **📡 API**: tRPC for type-safe API calls
-- **🎮 3D Viewer**: React Three Fiber for interactive car models
-- **⚡ Real-time**: Pusher for live updates
-- **☁️ Storage**: S3-compatible storage with MinIO
-- **🔒 Escrow**: Secure transaction handling
-- **🏆 Events**: Car shows and contests with voting
+Redline is a Next.js-based platform that combines social networking with automotive culture. Users can create or join clubs, share posts, organize meetups, participate in challenges, and trade parts in the marketplace.
 
-## Architecture
+### Core Features
+
+- **Club System**: Create public/private clubs with member management
+- **Social Feed**: Share posts, photos, and updates with club members
+- **Events**: Organize and attend club meetups and car shows
+- **Challenges**: Participate in driving challenges with leaderboards
+- **Marketplace**: Buy/sell car parts and accessories
+- **User Profiles**: Track achievements, memberships, and activity
+
+## 🛠️ Tech Stack
+
+- **Frontend**: Next.js 14 (App Router), React, TypeScript
+- **Styling**: Tailwind CSS, Radix UI components
+- **Backend**: tRPC, Prisma ORM
+- **Database**: PostgreSQL
+- **Authentication**: Clerk
+- **Payments**: Stripe (subscriptions), Coinbase Commerce (crypto)
+- **File Storage**: AWS S3 / MinIO
+- **Real-time**: Pusher
+- **Monitoring**: Sentry
+- **3D Models**: Three.js (car model viewer)
+
+## 📦 Project Structure
 
 ```
-CarHub (Turborepo + PNPM)
+redline/
 ├── packages/
-│   ├── web/        # Next.js 14 app with tRPC + Clerk
-│   ├── db/         # Prisma schema + migrations
-│   ├── shared/     # Zod schemas + utility types
-│   └── infra/      # Docker Compose setup
-├── .github/        # CI workflows
-└── docs/           # Documentation
+│   ├── web/          # Next.js frontend application
+│   ├── db/           # Prisma schema and database utilities
+│   └── shared/       # Shared types and utilities
+├── public/           # Static assets
+└── turbo.json        # Turborepo configuration
 ```
 
-## Prerequisites
+## 🚀 Getting Started
 
-- **Node.js** 20+
-- **PNPM** 8.15.0+
-- **Docker** & **Docker Compose**
-- **Git**
+### Prerequisites
 
-## Quick Start
+- Node.js 18+ and pnpm 8+
+- PostgreSQL database
+- Clerk account for authentication
+- Optional: Stripe account, AWS S3/MinIO for file storage
 
-### 1. Clone and Install
+### Environment Setup
 
+1. Clone the repository:
 ```bash
-git clone <your-repo-url> carhub
-cd carhub
+git clone <repository-url>
+cd redline
+```
+
+2. Install dependencies:
+```bash
 pnpm install
 ```
 
-### 2. Environment Setup
-
+3. Copy the environment sample:
 ```bash
-cp env.sample .env.local
-# Edit .env.local with your actual API keys
+cp env.sample .env
 ```
 
-### 3. Start Infrastructure
+4. Configure your `.env` file with:
+   - Database connection string
+   - Clerk API keys
+   - Stripe keys (optional)
+   - S3/MinIO credentials (optional)
 
+### Database Setup
+
+1. Create the database:
 ```bash
-# Start Postgres, MinIO, and pgAdmin
-docker compose -f packages/infra/docker-compose.yml up -d
-
-# Verify services are running
-docker compose -f packages/infra/docker-compose.yml ps
+createdb redline
 ```
 
-### 4. Database Setup
-
+2. Run migrations:
 ```bash
-# Generate Prisma client
-cd packages/db
-pnpm db:generate
-
-# Run migrations
 pnpm db:migrate
+```
 
-# Seed with sample data
+3. (Optional) Seed the database:
+```bash
 pnpm db:seed
 ```
 
-### 5. Start Development
+### Development
 
+Start the development server:
 ```bash
-# Start all packages in dev mode
 pnpm dev
 ```
 
-🎉 **Open [http://localhost:3000](http://localhost:3000)**
+The application will be available at `http://localhost:3000`.
 
-## Services
+## 🏗️ Architecture
 
-| Service           | URL                   | Credentials                |
-| ----------------- | --------------------- | -------------------------- |
-| **Web App**       | http://localhost:3000 | -                          |
-| **pgAdmin**       | http://localhost:5050 | admin@carhub.com / admin   |
-| **MinIO Console** | http://localhost:9001 | minioadmin / minioadmin123 |
-| **Postgres**      | localhost:5432        | postgres / postgres        |
+### Authentication Flow
 
-## Development Commands
+1. User signs up/in via Clerk
+2. Webhook creates/updates user in our database
+3. tRPC context resolves Clerk ID to database user
+4. All API calls include user context
+
+### Data Model Highlights
+
+- **Users**: Synced from Clerk, includes site roles (USER, ADMIN, SUPER_ADMIN)
+- **Clubs**: Can be public/private, support member roles
+- **Posts**: Support comments, likes, and nested replies
+- **Events**: Include attendance tracking
+- **Challenges**: Support different types with leaderboards
+
+### Security
+
+- Role-based access control (RBAC) for clubs and site administration
+- Rate limiting on sensitive endpoints
+- Audit logging for important actions
+- Input validation with Zod schemas
+
+## 📝 Development Notes
+
+### Current State
+
+The codebase has been cleaned up and documented for handoff. Key areas that are production-ready:
+
+- ✅ Authentication and user management
+- ✅ Club creation and management
+- ✅ Post creation and interactions
+- ✅ Basic event system
+- ✅ Member management and permissions
+
+### Areas Needing Work
+
+1. **Image Uploads**: Currently using URL inputs, needs proper file upload
+2. **Real-time Updates**: Pusher integration started but not completed
+3. **Marketplace**: Basic structure exists, needs payment integration
+4. **Challenges**: Data model exists, UI needs implementation
+5. **Notifications**: System design needed for club activities
+6. **Search**: Full-text search for posts and clubs
+
+### Code Quality TODOs
+
+- Add comprehensive test coverage
+- Implement proper error boundaries
+- Add loading skeletons for better UX
+- Optimize database queries with proper indexes
+- Add data validation for all user inputs
+- Implement proper caching strategy
+
+### Security TODOs
+
+- Implement CSRF protection
+- Add API rate limiting per user
+- Set up proper CORS configuration
+- Add request signing for webhooks
+- Implement session management
+- Add IP-based blocking for abuse
+
+## 🧪 Testing
+
+Currently, the project lacks automated tests. Priority areas for testing:
+
+1. Authentication flows
+2. Permission checks
+3. API endpoints
+4. Database operations
+5. UI components
+
+## 🚢 Deployment
+
+The application is designed to be deployed on:
+
+- **Frontend**: Vercel (recommended) or any Node.js host
+- **Database**: Supabase, Neon, or any PostgreSQL provider
+- **File Storage**: AWS S3, Cloudflare R2, or MinIO
+
+### Deployment Checklist
+
+- [ ] Set production environment variables
+- [ ] Configure Clerk production keys
+- [ ] Set up database backups
+- [ ] Configure Sentry for error tracking
+- [ ] Set up monitoring and alerts
+- [ ] Configure custom domain
+- [ ] Set up SSL certificates
+- [ ] Configure CDN for static assets
+
+## 📚 API Documentation
+
+The API is built with tRPC, providing type-safe endpoints. Key routers:
+
+- `/api/trpc/club.*` - Club management
+- `/api/trpc/clubPost.*` - Posts and comments
+- `/api/trpc/clubEvent.*` - Event management
+- `/api/trpc/user.*` - User operations
+- `/api/trpc/challenge.*` - Challenge system
+
+## 🤝 Contributing
+
+1. Create a feature branch
+2. Make your changes
+3. Ensure code passes linting
+4. Submit a pull request
+
+## 📄 License
+
+This project is private and proprietary.
+
+---
+
+## 🎯 Quick Start Commands
 
 ```bash
 # Install dependencies
 pnpm install
 
-# Start development servers
+# Set up database
+pnpm db:migrate
+pnpm db:seed
+
+# Start development
 pnpm dev
 
-# Build all packages
+# Build for production
 pnpm build
 
-# Run linting
-pnpm lint
+# Run type checking
+pnpm type-check
 
 # Format code
 pnpm format
-
-# Type checking
-pnpm type-check
-
-# Database operations
-pnpm db:migrate     # Run migrations
-pnpm db:seed        # Seed database
-pnpm db:studio      # Open Prisma Studio
 ```
 
-## Environment Variables
+## 🆘 Troubleshooting
 
-Key variables to configure:
+### Common Issues
 
-```bash
-# Database
-DATABASE_URL="postgresql://postgres:postgres@localhost:5432/carhub"
+1. **Database connection errors**: Check your DATABASE_URL in .env
+2. **Clerk authentication issues**: Verify your Clerk keys are correct
+3. **Build errors**: Try `pnpm clean` and rebuild
+4. **Type errors**: Run `pnpm type-check` to identify issues
 
-# Authentication (Clerk)
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY="pk_test_..."
-CLERK_SECRET_KEY="sk_test_..."
+### Support
 
-# Payments
-STRIPE_SECRET_KEY="sk_test_..."
-NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY="pk_test_..."
+For questions or issues, please check the codebase documentation or create an issue in the repository.
 
-# Storage (MinIO)
-S3_ENDPOINT="http://localhost:9000"
-S3_ACCESS_KEY="minioadmin"
-S3_SECRET_KEY="minioadmin123"
+## 🚀 Events & Challenges System
 
-# Real-time (Pusher)
-PUSHER_APP_ID="your-app-id"
-PUSHER_KEY="your-key"
-PUSHER_SECRET="your-secret"
-```
+The Events & Challenges feature allows clubs to host events, sell tickets, and run skill-based challenges with entry fees and bonus prize pools.
 
-## Project Structure
+### Testing the API Routes Locally
 
-```
-packages/web/
-├── app/                    # Next.js App Router
-│   ├── (auth)/            # Auth pages
-│   ├── marketplace/       # Marketplace pages
-│   ├── events/           # Events pages
-│   ├── dashboard/        # User dashboard
-│   ├── api/trpc/         # tRPC API routes
-│   └── actions/          # Server actions
-├── components/
-│   ├── ui/               # shadcn/ui components
-│   └── CarModelViewer.tsx # 3D car viewer
-├── lib/
-│   ├── trpc.tsx          # tRPC client setup
-│   ├── db.ts             # Prisma client
-│   ├── s3.ts             # S3 storage utils
-│   └── payments.ts       # Payment helpers
-└── server/api/           # tRPC server setup
+1. **First, run database migrations to create the new tables:**
+   ```bash
+   cd packages/db
+   npx prisma migrate dev --name add_events_challenges
+   ```
 
-packages/db/
-├── prisma/
-│   └── schema.prisma     # Database schema
-├── seed.ts               # Database seeder
-└── scripts/              # Migration scripts
+2. **Generate Prisma Client with new models:**
+   ```bash
+   npx prisma generate
+   ```
 
-packages/shared/
-└── src/
-    └── index.ts          # Zod schemas + types
-```
+3. **Test creating an event (requires club admin role):**
+   ```bash
+   # Create event without challenges
+   curl -X POST http://localhost:3000/api/events/create \
+     -H "Content-Type: application/json" \
+     -H "Authorization: Bearer <your-clerk-token>" \
+     -d '{
+       "title": "Summer Car Meet 2024",
+       "description": "Annual summer gathering",
+       "location": "Downtown Parking Garage",
+       "startDateTime": "2024-07-01T10:00:00Z",
+       "endDateTime": "2024-07-01T16:00:00Z",
+       "isPublic": true,
+       "entryFeeUSD": 25,
+       "maxAttendees": 200,
+       "clubId": "<your-club-id>"
+     }'
 
-## Key Features Implementation
+   # Create event with challenges (requires premium club)
+   curl -X POST http://localhost:3000/api/events/create \
+     -H "Content-Type: application/json" \
+     -H "Authorization: Bearer <your-clerk-token>" \
+     -d '{
+       "title": "Street Performance Challenge",
+       "description": "Test your skills",
+       "location": "Industrial District",
+       "startDateTime": "2024-08-15T09:00:00Z",
+       "endDateTime": "2024-08-15T18:00:00Z",
+       "isPublic": false,
+       "entryFeeUSD": 50,
+       "maxAttendees": 100,
+       "clubId": "<your-club-id>",
+       "challenges": [
+         {
+           "title": "0-60 Time Attack",
+           "description": "Fastest acceleration wins",
+           "entryFeeUSD": 20,
+           "bonusPoolPercentOfEventFees": 25
+         }
+       ]
+     }'
+   ```
 
-### 🎮 3D Car Viewer
+4. **Register for an event:**
+   ```bash
+   curl -X POST http://localhost:3000/api/events/<event-id>/register \
+     -H "Authorization: Bearer <your-clerk-token>"
+   ```
 
-- React Three Fiber integration
-- Interactive car model viewing
-- Suspense-based loading
-- Mobile-responsive controls
+5. **Enter a challenge (must be registered for event first):**
+   ```bash
+   curl -X POST http://localhost:3000/api/challenges/<challenge-id>/enter \
+     -H "Authorization: Bearer <your-clerk-token>"
+   ```
 
-### 🔒 Secure Escrow
+6. **Complete a challenge and set winners (club admin only):**
+   ```bash
+   curl -X POST http://localhost:3000/api/challenges/<challenge-id>/complete \
+     -H "Content-Type: application/json" \
+     -H "Authorization: Bearer <your-clerk-token>" \
+     -d '{
+       "firstPlaceUserId": "<user-id-1>",
+       "secondPlaceUserId": "<user-id-2>",
+       "thirdPlaceUserId": "<user-id-3>"
+     }'
+   ```
 
-- Multi-step transaction flow
-- Stripe payment integration
-- Automated fund release
-- Dispute resolution system
+### Important Notes
 
-### 💰 Crypto Payments
+- **Payments**: Currently using placeholder payment intent IDs. Real Stripe integration needs to be implemented.
+- **Premium Features**: Only clubs with `premium: true` can create events with challenges.
+- **Bonus Pools**: Calculated as a percentage of total event entry fees. Winners receive 50% (1st), 30% (2nd), and 20% (3rd).
+- **Authentication**: All routes require Clerk authentication token.
 
-- Coinbase Commerce integration
-- USDC payment support
-- Real-time payment tracking
-- Multi-currency support
+### Database Schema
 
-### 🏆 Events & Contests
-
-- Real-time voting system
-- Leaderboards and prizes
-- Event management dashboard
-- Social features
-
-## Contributing
-
-1. **Fork** the repository
-2. **Create** a feature branch (`git checkout -b feature/amazing-feature`)
-3. **Commit** changes (`git commit -m 'Add amazing feature'`)
-4. **Push** to branch (`git push origin feature/amazing-feature`)
-5. **Open** a Pull Request
-
-## Technology Stack
-
-**Frontend:**
-
-- Next.js 14 (App Router)
-- TypeScript
-- Tailwind CSS
-- shadcn/ui
-- React Three Fiber
-
-**Backend:**
-
-- tRPC
-- Prisma ORM
-- PostgreSQL
-- Clerk Auth
-
-**Infrastructure:**
-
-- Docker Compose
-- MinIO (S3-compatible)
-- Pusher (WebSockets)
-- Vercel (Deployment)
-
-**Payments:**
-
-- Stripe Connect
-- Coinbase Commerce
-
-## License
-
-MIT License - see [LICENSE](LICENSE) file for details.
-
----
-
-**Built with ❤️ by the CarHub team**
+The feature adds these new models:
+- `Event`: Main event details with entry fees and attendance limits
+- `Challenge`: Skill-based competitions within events  
+- `EventEntry`: Tracks user registrations for events
+- `ChallengeEntry`: Tracks user entries in challenges

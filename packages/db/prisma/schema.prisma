@@ -13,12 +13,53 @@ model User {
   email    String @unique
   name     String?
   imageUrl String?
+  siteRole SiteRole @default(USER)
 
+  // Existing relations
   listings    Listing[]
   orders      Order[]
   events      Event[]
+  legacyEvents LegacyEvent[]
   votes       Vote[]
   scans       Scan[]
+
+  // New club system relations
+  createdClubs         Club[]                  @relation("CreatedClubs")
+  clubMemberships      ClubMember[]
+  clubJoinRequests     ClubJoinRequest[]
+  reviewedJoinRequests ClubJoinRequest[]       @relation("ClubJoinRequestReviewer")
+  challengesCreated    Challenge[]             @relation("ChallengeCreator")
+  challengeParticipations ChallengeParticipant[]
+  leaderboardEntries   LeaderboardEntry[]
+  clubEventsOrganized  ClubEvent[]             @relation("ClubEventOrganizer")
+  eventAttendances     EventAttendee[]
+  marketplacePosts     MarketplacePost[]
+  clubPosts            ClubPost[]
+  postLikes            PostLike[]
+  postComments         PostComment[]
+  commentLikes         CommentLike[]
+  
+  // Friendship relations
+  friendRequestsSent     Friendship[] @relation("FriendshipRequester")
+  friendRequestsReceived Friendship[] @relation("FriendshipAddressee")
+  
+  // Audit logs
+  auditLogs         AuditLog[] @relation("AuditLogUser")
+  targetedAuditLogs AuditLog[] @relation("AuditLogTargetUser")
+  
+  // Ban system relations
+  clubBans          ClubBan[]
+  bannedUsers       ClubBan[] @relation("ClubBansBanned")
+  
+  // Admin messaging relations
+  sentAdminMessages AdminMessage[] @relation("SentAdminMessages")
+  
+  // Subscription
+  subscription         Subscription?
+  
+  // New Event System relations
+  eventEntries         EventEntry[]
+  challengeEntries     ChallengeEntry[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -86,7 +127,7 @@ model Order {
   @@map("orders")
 }
 
-model Event {
+model LegacyEvent {
   id          String  @id @default(cuid())
   name        String
   description String?
@@ -102,6 +143,37 @@ model Event {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  @@map("legacy_events")
+}
+
+// New Event model for the Events & Challenges feature
+model Event {
+  id                    String      @id @default(cuid())
+  title                 String
+  description           String?
+  location              String
+  startDateTime         DateTime
+  endDateTime           DateTime
+  isPublic              Boolean     @default(true)
+  entryFeeUSD           Decimal?    @db.Decimal(10, 2)
+  maxAttendees          Int?
+  premiumFeaturesEnabled Boolean    @default(false)
+  sponsorAssets         Json?       // JSON for sponsor logos, banners, etc.
+  status                EventStatus @default(DRAFT)
+  
+  club                  Club        @relation(fields: [clubId], references: [id], onDelete: Cascade)
+  clubId                String
+  
+  organizer             User        @relation(fields: [organizerId], references: [id], onDelete: Cascade)
+  organizerId           String
+  
+  // Relations
+  entries               EventEntry[]
+  challenges            Challenge[]
+  
+  createdAt             DateTime    @default(now())
+  updatedAt             DateTime    @updatedAt
+
   @@map("events")
 }
 
@@ -111,7 +183,7 @@ model Contest {
   description String?
   isActive    Boolean @default(true)
 
-  event   Event  @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  event   LegacyEvent  @relation(fields: [eventId], references: [id], onDelete: Cascade)
   eventId String
 
   votes Vote[]
@@ -172,4 +244,572 @@ enum ScanType {
   ENGINE
   UNDERCARRIAGE
   DOCUMENTATION
-} 
+}
+
+// Club Management
+model Club {
+  id          String      @id @default(cuid())
+  name        String
+  description String?
+  imageUrl    String?
+  isPrivate   Boolean     @default(false)
+  inviteCode  String?     @unique
+  city        String?
+  territory   String?
+  
+  // Geographic data for leaderboards
+  latitude    Float?
+  longitude   Float?
+  
+  // Enhanced invite management
+  maxMembers         Int?
+  inviteExpiry       DateTime?
+  allowMemberInvites Boolean @default(true)
+  
+  // Premium features
+  premium            Boolean @default(false)
+  
+  creator     User        @relation("CreatedClubs", fields: [creatorId], references: [id], onDelete: Cascade)
+  creatorId   String
+  
+  members     ClubMember[]
+  joinRequests ClubJoinRequest[]
+  challenges  Challenge[]
+  events      ClubEvent[]
+  posts       ClubPost[]
+  marketplacePosts MarketplacePost[]
+  bans        ClubBan[]
+  adminMessages AdminMessage[]
+  
+  // New Event model relation
+  hostedEvents Event[]
+  
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  @@map("clubs")
+}
+
+model ClubMember {
+  id        String      @id @default(cuid())
+  role      ClubRole    @default(MEMBER)
+  joinedAt  DateTime    @default(now())
+  
+  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  
+  club      Club        @relation(fields: [clubId], references: [id], onDelete: Cascade)
+  clubId    String
+  
+  @@unique([userId, clubId])
+  @@map("club_members")
+}
+
+model ClubJoinRequest {
+  id        String                @id @default(cuid())
+  status    ClubJoinRequestStatus @default(PENDING)
+  message   String?               // Optional message from requester
+  
+  user      User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  
+  club      Club                  @relation(fields: [clubId], references: [id], onDelete: Cascade)
+  clubId    String
+  
+  // Admin who reviewed the request
+  reviewedBy User?                @relation("ClubJoinRequestReviewer", fields: [reviewedById], references: [id], onDelete: SetNull)
+  reviewedById String?
+  reviewedAt DateTime?
+  
+  createdAt DateTime              @default(now())
+  updatedAt DateTime              @updatedAt
+  
+  @@unique([userId, clubId])
+  @@map("club_join_requests")
+}
+
+// Event Challenge System (for skill-based challenges within events)
+model Challenge {
+  id                      String          @id @default(cuid())
+  title                   String
+  description             String
+  entryFeeUSD             Decimal?        @db.Decimal(10, 2)
+  bonusPoolPercentOfEventFees Decimal     @default(0) @db.Decimal(5, 2) // 0-100 percentage
+  status                  ChallengeStatus @default(PENDING)
+  
+  // Winners
+  firstPlaceUserId        String?
+  secondPlaceUserId       String?
+  thirdPlaceUserId        String?
+  payoutsReleasedAt       DateTime?
+  
+  // Relations
+  event                   Event           @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  eventId                 String
+  
+  entries                 ChallengeEntry[]
+  
+  // Legacy relations (kept for compatibility)
+  type                    ChallengeType
+  isPreMade               Boolean         @default(false)
+  difficulty              Difficulty
+  city                    String?
+  territory               String?
+  isGlobal                Boolean         @default(false)
+  parameters              Json?           // Flexible JSON for different challenge types
+  club                    Club?           @relation(fields: [clubId], references: [id], onDelete: Cascade)
+  clubId                  String?
+  creator                 User            @relation("ChallengeCreator", fields: [creatorId], references: [id], onDelete: Cascade)
+  creatorId               String
+  participants            ChallengeParticipant[]
+  leaderboard             LeaderboardEntry[]
+  isActive                Boolean         @default(true)
+  startDate               DateTime?
+  endDate                 DateTime?
+  
+  createdAt               DateTime        @default(now())
+  updatedAt               DateTime        @updatedAt
+
+  @@map("challenges")
+}
+
+model ChallengeParticipant {
+  id          String    @id @default(cuid())
+  score       Float?
+  completedAt DateTime?
+  evidence    Json?     // Photos, videos, data
+  
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId      String
+  
+  challenge   Challenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+  challengeId String
+  
+  createdAt   DateTime  @default(now())
+  
+  @@unique([userId, challengeId])
+  @@map("challenge_participants")
+}
+
+// Leaderboard System
+model LeaderboardEntry {
+  id          String    @id @default(cuid())
+  rank        Int
+  score       Float
+  scope       LeaderboardScope // GLOBAL, CITY, TERRITORY, CLUB
+  scopeValue  String?   // City name, territory name, or club ID
+  
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId      String
+  
+  challenge   Challenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+  challengeId String
+  
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  
+  @@unique([userId, challengeId, scope, scopeValue])
+  @@map("leaderboard_entries")
+}
+
+// Club Events (separate from your existing events)
+model ClubEvent {
+  id          String    @id @default(cuid())
+  title       String
+  description String?
+  date        DateTime
+  location    String?
+  latitude    Float?
+  longitude   Float?
+  maxAttendees Int?
+  
+  club        Club      @relation(fields: [clubId], references: [id], onDelete: Cascade)
+  clubId      String
+  
+  organizer   User      @relation("ClubEventOrganizer", fields: [organizerId], references: [id], onDelete: Cascade)
+  organizerId String
+  
+  attendees   EventAttendee[]
+  
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@map("club_events")
+}
+
+model EventAttendee {
+  id        String    @id @default(cuid())
+  status    AttendanceStatus @default(PENDING)
+  
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  
+  event     ClubEvent @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  eventId   String
+  
+  @@unique([userId, eventId])
+  @@map("event_attendees")
+}
+
+// Marketplace (extending your existing)
+model MarketplacePost {
+  id          String    @id @default(cuid())
+  title       String
+  description String
+  price       Decimal?
+  images      String[]  // Array of image URLs
+  category    String
+  condition   Condition
+  isActive    Boolean   @default(true)
+  
+  seller      User      @relation(fields: [sellerId], references: [id], onDelete: Cascade)
+  sellerId    String
+  
+  // Optional club association
+  club        Club?     @relation(fields: [clubId], references: [id], onDelete: SetNull)
+  clubId      String?
+  
+  // Geographic
+  city        String?
+  location    String?
+  
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@map("marketplace_posts")
+}
+
+// Friendship System
+model Friendship {
+  id        String          @id @default(cuid())
+  status    FriendshipStatus @default(PENDING)
+  
+  requester User            @relation("FriendshipRequester", fields: [requesterId], references: [id], onDelete: Cascade)
+  requesterId String
+  
+  addressee User            @relation("FriendshipAddressee", fields: [addresseeId], references: [id], onDelete: Cascade)
+  addresseeId String
+  
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+  
+  @@unique([requesterId, addresseeId])
+  @@map("friendships")
+}
+
+// Club Posts/Feed
+model ClubPost {
+  id        String    @id @default(cuid())
+  content   String
+  images    String[]  // Array of image URLs
+  
+  author    User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  authorId  String
+  
+  club      Club      @relation(fields: [clubId], references: [id], onDelete: Cascade)
+  clubId    String
+  
+  likes     PostLike[]
+  comments  PostComment[]
+  
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@map("club_posts")
+}
+
+model PostLike {
+  id      String   @id @default(cuid())
+  
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId  String
+  
+  post    ClubPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId  String
+  
+  createdAt DateTime @default(now())
+  
+  @@unique([userId, postId])
+  @@map("post_likes")
+}
+
+model PostComment {
+  id      String   @id @default(cuid())
+  content String
+  
+  author  User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  authorId String
+  
+  post    ClubPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId  String
+  
+  // Threading support
+  parent   PostComment? @relation("CommentThread", fields: [parentId], references: [id], onDelete: Cascade)
+  parentId String?
+  replies  PostComment[] @relation("CommentThread")
+  
+  // Comment likes
+  likes    CommentLike[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("post_comments")
+}
+
+// Comment Like System
+model CommentLike {
+  id        String      @id @default(cuid())
+  
+  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  
+  comment   PostComment @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  commentId String
+  
+  createdAt DateTime    @default(now())
+  
+  @@unique([userId, commentId])
+  @@map("comment_likes")
+}
+
+// Subscription System
+model Subscription {
+  id              String            @id @default(cuid())
+  tier            SubscriptionTier
+  status          SubscriptionStatus @default(ACTIVE)
+  stripeCustomerId String?          @unique
+  stripePriceId   String?
+  
+  user            User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId          String            @unique
+  
+  currentPeriodStart DateTime
+  currentPeriodEnd   DateTime
+  
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  @@map("subscriptions")
+}
+
+// New Enums
+enum ClubRole {
+  ADMIN
+  MODERATOR
+  MEMBER
+}
+
+enum ChallengeType {
+  TIME_TRIAL
+  DISTANCE
+  FUEL_EFFICIENCY
+  PHOTO_CONTEST
+  CUSTOM
+}
+
+enum Difficulty {
+  EASY
+  MEDIUM
+  HARD
+  EXPERT
+}
+
+enum LeaderboardScope {
+  GLOBAL
+  CITY
+  TERRITORY
+  CLUB
+}
+
+enum AttendanceStatus {
+  PENDING
+  ATTENDING
+  NOT_ATTENDING
+}
+
+enum Condition {
+  NEW
+  LIKE_NEW
+  GOOD
+  FAIR
+  POOR
+}
+
+enum FriendshipStatus {
+  PENDING
+  ACCEPTED
+  BLOCKED
+}
+
+enum SubscriptionTier {
+  FREE
+  PREMIUM
+  PRO
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  CANCELED
+  PAST_DUE
+  INCOMPLETE
+}
+
+enum SiteRole {
+  SUPER_ADMIN
+  ADMIN
+  USER
+}
+
+enum ClubJoinRequestStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+// Audit logging system
+model AuditLog {
+  id          String   @id @default(cuid())
+  action      String   // The action performed (e.g., "user.created", "club.deleted")
+  userId      String?  // Who performed the action
+  targetUserId String? // Who was affected by the action
+  resourceType String? // Type of resource affected (user, club, post, etc.)
+  resourceId  String?  // ID of the affected resource
+  
+  metadata    Json?    // Additional context data
+  ipAddress   String?  // IP address of the user
+  userAgent   String?  // User agent string
+  
+  severity    AuditSeverity @default(MEDIUM)
+  category    AuditCategory
+  
+  timestamp   DateTime @default(now())
+  
+  // Relations
+  user        User?    @relation("AuditLogUser", fields: [userId], references: [id], onDelete: SetNull)
+  targetUser  User?    @relation("AuditLogTargetUser", fields: [targetUserId], references: [id], onDelete: SetNull)
+  
+  @@map("audit_logs")
+  @@index([userId])
+  @@index([timestamp])
+  @@index([action])
+  @@index([severity])
+  @@index([category])
+}
+
+enum AuditSeverity {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum AuditCategory {
+  SECURITY
+  MODERATION
+  ADMINISTRATION
+  USER_ACTION
+}
+
+// Club ban system
+model ClubBan {
+  id          String    @id @default(cuid())
+  reason      String?
+  isPermanent Boolean   @default(false)
+  expiresAt   DateTime?
+  
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId      String
+  
+  club        Club      @relation(fields: [clubId], references: [id], onDelete: Cascade)
+  clubId      String
+  
+  bannedBy    User      @relation("ClubBansBanned", fields: [bannedById], references: [id], onDelete: Cascade)
+  bannedById  String
+  
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  
+  @@unique([userId, clubId])
+  @@map("club_bans")
+}
+
+// Admin messaging system
+model AdminMessage {
+  id           String              @id @default(cuid())
+  message      String
+  type         AdminMessageType    @default(INFO)
+  targetUserIds String[]           // Array of user IDs who should see this message
+  isRead       Boolean             @default(false)
+  
+  club         Club                @relation(fields: [clubId], references: [id], onDelete: Cascade)
+  clubId       String
+  
+  sender       User                @relation("SentAdminMessages", fields: [senderId], references: [id], onDelete: Cascade)
+  senderId     String
+  
+  createdAt    DateTime            @default(now())
+  updatedAt    DateTime            @updatedAt
+  
+  @@map("admin_messages")
+}
+
+enum AdminMessageType {
+  INFO
+  ANNOUNCEMENT
+  WARNING
+}
+
+// New Event System Enums
+enum EventStatus {
+  DRAFT
+  PUBLISHED
+  ONGOING
+  COMPLETED
+  CANCELLED
+}
+
+enum ChallengeStatus {
+  PENDING
+  ACTIVE
+  COMPLETED
+  CANCELLED
+}
+
+// Event Entry model
+model EventEntry {
+  id                    String    @id @default(cuid())
+  
+  event                 Event     @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  eventId               String
+  
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId                String
+  
+  stripePaymentIntentId String?   // Stripe payment intent for entry fee
+  checkedInAt           DateTime? // When user checked in at the event
+  
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+  
+  @@unique([eventId, userId])
+  @@map("event_entries")
+}
+
+// Challenge Entry model
+model ChallengeEntry {
+  id                    String    @id @default(cuid())
+  
+  challenge             Challenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+  challengeId           String
+  
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId                String
+  
+  stripePaymentIntentId String?   // Stripe payment intent for challenge entry fee
+  
+  createdAt             DateTime  @default(now())
+  
+  @@unique([challengeId, userId])
+  @@map("challenge_entries")
+}

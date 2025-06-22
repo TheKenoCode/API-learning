@@ -34,8 +34,9 @@ class ModelErrorBoundary extends Component<
     return { hasError: true };
   }
 
-  componentDidCatch(error: Error) {
-    console.warn("3D Model loading failed:", error.message);
+  componentDidCatch() {
+    // Silently handle 3D model loading errors
+    // Users will see the fallback UI instead
   }
 
   render() {

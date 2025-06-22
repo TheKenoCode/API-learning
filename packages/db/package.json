@@ -1,5 +1,5 @@
 {
-  "name": "@carhub/db",
+  "name": "@redline/db",
   "version": "1.0.0",
   "private": true,
   "scripts": {
@@ -9,6 +9,9 @@
     "db:studio": "prisma studio",
     "db:generate": "prisma generate",
     "db:push": "prisma db push",
+    "db:admin": "tsx scripts/make-admin.ts",
+    "db:debug": "tsx scripts/debug-user.ts",
+    "db:cleanup": "tsx scripts/cleanup-join-requests.ts",
     "postinstall": "prisma generate"
   },
   "dependencies": {

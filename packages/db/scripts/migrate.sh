@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# CarHub Database Migration Script
-echo "🗄️  Starting CarHub database migration..."
+# Redline Database Migration Script
+echo "🗄️  Starting Redline database migration..."
 
 # Check if DATABASE_URL is set
 if [ -z "$DATABASE_URL" ]; then
@@ -24,7 +24,7 @@ pnpm db:seed
 
 echo "✅ Database migration completed successfully!"
 echo ""
-echo "🎉 Your CarHub database is ready!"
+echo "🎉 Your Redline database is ready!"
 echo "   - Open Prisma Studio: pnpm db:studio"
 echo "   - Access pgAdmin: http://localhost:5050"
 echo "" 

@@ -112,12 +112,11 @@ export default function HomePage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.4 }}
           >
-            <span className="text-white">MIDNIGHT</span>
             <span className="block text-red-500 text-6xl md:text-8xl lg:text-9xl font-black">
-              CLUB
+              REDLINE
             </span>
             <span className="block text-white/80 text-2xl md:text-3xl font-normal tracking-widest mt-2">
-              I R L
+              P L A T F O R M
             </span>
           </motion.h1>
 
@@ -137,7 +136,7 @@ export default function HomePage() {
             transition={{ duration: 0.8, delay: 0.7 }}
           >
             Create your crew. Dominate your territory. Build your legend. Where
-            street racing culture meets enterprise-level competition.
+            automotive culture meets competitive community.
           </motion.p>
 
           <motion.div
@@ -177,7 +176,7 @@ export default function HomePage() {
             transition={{ duration: 0.8, delay: 1 }}
           >
             <Badge className="bg-red-500/10 text-red-400 border-red-500/30 text-sm px-4 py-2">
-              🔥 127 Active Clubs • 2,847 Street Racers Online
+              🔥 127 Active Clubs • 2,847 Members Online
             </Badge>
           </motion.div>
         </motion.div>
@@ -195,7 +194,7 @@ export default function HomePage() {
             </h2>
             <p className="text-white/70 text-xl max-w-3xl mx-auto">
               Create exclusive clubs, challenge rival crews, and establish your
-              dominance across cities. This isn&apos;t just racing—it&apos;s
+              dominance across cities. This isn&apos;t just competition—it&apos;s
               digital street sovereignty.
             </p>
           </motion.div>
@@ -423,7 +422,7 @@ export default function HomePage() {
 
                     <div className="text-center pt-2">
                       <span className="text-white/40 text-xs">
-                        Updates every 30 seconds • 247 racers tracked
+                        Updates every 30 seconds • 247 members tracked
                       </span>
                     </div>
                   </div>
@@ -814,11 +813,11 @@ export default function HomePage() {
               <div className="flex items-center gap-2">
                 <BrandIcon className="w-8 h-8 text-red-500" />
                 <span className="text-2xl font-bold text-white">
-                  MIDNIGHT CLUB
+                  REDLINE
                 </span>
               </div>
               <p className="text-white/50 text-sm">
-                The underground revolution where street racing culture meets
+                The underground revolution where automotive culture meets
                 enterprise technology. Build your legend, dominate your
                 territory, rule the night.
               </p>
@@ -941,11 +940,11 @@ export default function HomePage() {
 
           <div className="border-t border-red-500/20 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
             <p className="text-white/40 text-sm">
-              © 2024 MIDNIGHT CLUB IRL. Own the night.
+              © 2024 REDLINE PLATFORM. Own the night.
             </p>
             <div className="flex gap-4 mt-4 md:mt-0">
               <Badge className="bg-red-500/10 text-red-400 border-red-500/20 text-xs">
-                🔴 LIVE: 2,847 RACERS ONLINE
+                🔴 LIVE: 2,847 MEMBERS ONLINE
               </Badge>
             </div>
           </div>

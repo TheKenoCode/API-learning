@@ -1,6 +1,6 @@
-# Landing Page Media Assets
+# Landing Page Assets
 
-This directory contains placeholder media assets for the CarHub landing page. Replace these files with actual content to complete the landing page design.
+This directory contains placeholder media assets for the Redline landing page. Replace these files with actual content to complete the landing page design.
 
 ## Required Assets
 

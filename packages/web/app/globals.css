@@ -5,47 +5,57 @@
 @layer base {
   :root {
     --background: 0 0% 100%;
-    --foreground: 0 0% 0%;
+    --foreground: 0 0% 3.9%;
     --card: 0 0% 100%;
-    --card-foreground: 0 0% 0%;
+    --card-foreground: 0 0% 3.9%;
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 0%;
-    --primary: 0 84% 60%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 0 0% 96%;
-    --secondary-foreground: 0 0% 0%;
-    --muted: 0 0% 96%;
-    --muted-foreground: 0 0% 40%;
-    --accent: 0 0% 96%;
-    --accent-foreground: 0 0% 0%;
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 100%;
-    --border: 0 0% 91%;
-    --input: 0 0% 91%;
-    --ring: 0 84% 60%;
+    --popover-foreground: 0 0% 3.9%;
+    --primary: 0 0% 9%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 0 0% 96.1%;
+    --secondary-foreground: 0 0% 9%;
+    --muted: 0 0% 96.1%;
+    --muted-foreground: 0 0% 45.1%;
+    --accent: 0 0% 96.1%;
+    --accent-foreground: 0 0% 9%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 89.8%;
+    --input: 0 0% 89.8%;
+    --ring: 0 0% 3.9%;
     --radius: 0.5rem;
+    --chart-1: 12 76% 61%;
+    --chart-2: 173 58% 39%;
+    --chart-3: 197 37% 24%;
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
   }
 
   .dark {
-    --background: 0 0% 0%;
-    --foreground: 0 0% 100%;
-    --card: 0 0% 8%;
-    --card-foreground: 0 0% 100%;
-    --popover: 0 0% 8%;
-    --popover-foreground: 0 0% 100%;
-    --primary: 0 84% 60%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 0 0% 12%;
-    --secondary-foreground: 0 0% 100%;
-    --muted: 0 0% 12%;
-    --muted-foreground: 0 0% 60%;
-    --accent: 0 0% 12%;
-    --accent-foreground: 0 0% 100%;
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 100%;
-    --border: 0 0% 12%;
-    --input: 0 0% 12%;
-    --ring: 0 84% 60%;
+    --background: 0 0% 3.9%;
+    --foreground: 0 0% 98%;
+    --card: 0 0% 3.9%;
+    --card-foreground: 0 0% 98%;
+    --popover: 0 0% 3.9%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 0 0% 98%;
+    --primary-foreground: 0 0% 9%;
+    --secondary: 0 0% 14.9%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 0 0% 14.9%;
+    --muted-foreground: 0 0% 63.9%;
+    --accent: 0 0% 14.9%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 14.9%;
+    --input: 0 0% 14.9%;
+    --ring: 0 0% 83.1%;
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
   }
 }
 
@@ -56,4 +66,199 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+@layer utilities {
+  .line-clamp-2 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+}
+
+/* Clerk Form Proper Containment */
+.cl-rootBox,
+.cl-card,
+.cl-main,
+.cl-form,
+.cl-formContainer {
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+.cl-formFieldRow,
+.cl-formField {
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+.cl-formFieldInput {
+  width: 100% !important;
+  box-sizing: border-box !important;
+  min-width: 0 !important;
+}
+
+.cl-formButtonPrimary {
+  width: 100% !important;
+  box-sizing: border-box !important;
+  min-width: 0 !important;
+}
+
+.cl-socialButtonsBlock {
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+.cl-socialButtonsBlockButton {
+  width: 100% !important;
+  box-sizing: border-box !important;
+  min-width: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.cl-socialButtonsBlockButtonText {
+  flex: 1 !important;
+  text-align: center !important;
+  min-width: 0 !important;
+}
+
+/* Responsive scaling for small screens */
+@media (max-width: 480px) {
+  .cl-formButtonPrimary,
+  .cl-socialButtonsBlockButton {
+    font-size: 14px !important;
+    padding: 10px 12px !important;
+  }
+  
+  .cl-formFieldInput {
+    font-size: 16px !important;
+    padding: 10px 12px !important;
+  }
+}
+
+@media (max-width: 360px) {
+  .cl-formButtonPrimary,
+  .cl-socialButtonsBlockButton {
+    font-size: 13px !important;
+    padding: 8px 10px !important;
+  }
+}
+
+/* Custom scrollbar styling for dark theme */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Premium glass morphism effects */
+.glass-morphism {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* Neon glow effects */
+.neon-glow-red {
+  box-shadow: 0 0 20px rgba(239, 68, 68, 0.5),
+              0 0 40px rgba(239, 68, 68, 0.3),
+              0 0 60px rgba(239, 68, 68, 0.2);
+}
+
+.neon-glow-green {
+  box-shadow: 0 0 20px rgba(34, 197, 94, 0.5),
+              0 0 40px rgba(34, 197, 94, 0.3),
+              0 0 60px rgba(34, 197, 94, 0.2);
+}
+
+/* Animated background pattern */
+@keyframes pattern-drift {
+  0% { transform: translateX(0) translateY(0); }
+  100% { transform: translateX(10px) translateY(10px); }
+}
+
+.animated-pattern {
+  animation: pattern-drift 20s ease-in-out infinite alternate;
+}
+
+/* Card hover lift effect */
+.card-lift {
+  transition: all 0.4s cubic-bezier(0.15, 0.83, 0.66, 1);
+}
+
+.card-lift:hover {
+  transform: translateY(-8px) scale(1.02);
+}
+
+/* Number counter animation */
+@keyframes number-pop {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+.number-pop {
+  animation: number-pop 0.3s ease-out;
+}
+
+/* High contrast text shadow for badges */
+.text-shadow-strong {
+  text-shadow: 
+    0 0 10px rgba(255, 255, 255, 0.5),
+    0 2px 4px rgba(0, 0, 0, 0.8),
+    0 1px 2px rgba(0, 0, 0, 0.9);
+}
+
+/* Neon text effect for status badges */
+.text-neon-green {
+  text-shadow: 
+    0 0 10px rgba(134, 239, 172, 0.8),
+    0 0 20px rgba(34, 197, 94, 0.6),
+    0 2px 4px rgba(0, 0, 0, 0.9);
+}
+
+.text-neon-orange {
+  text-shadow: 
+    0 0 10px rgba(253, 186, 116, 0.8),
+    0 0 20px rgba(251, 146, 60, 0.6),
+    0 2px 4px rgba(0, 0, 0, 0.9);
+}
+
+.text-neon-blue {
+  text-shadow: 
+    0 0 10px rgba(147, 197, 253, 0.8),
+    0 0 20px rgba(59, 130, 246, 0.6),
+    0 2px 4px rgba(0, 0, 0, 0.9);
+}
+
+.text-neon-yellow {
+  text-shadow: 
+    0 0 10px rgba(253, 224, 71, 0.8),
+    0 0 20px rgba(250, 204, 21, 0.6),
+    0 2px 4px rgba(0, 0, 0, 0.9);
+}
+
+/* UploadThing custom styling - minimal approach */
+.uploadthing-no-file-input input[type="file"] {
+  position: absolute !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  width: 0 !important;
+  height: 0 !important;
 }

@@ -1,24 +1,30 @@
 {
-  "name": "carhub",
+  "name": "redline",
+  "version": "1.0.0",
+  "description": "A car enthusiast social platform with clubs, challenges, and marketplace",
   "private": true,
   "packageManager": "pnpm@8.15.0",
+  "author": "Your Name",
+  "license": "MIT",
   "scripts": {
-    "build": "turbo run build",
     "dev": "turbo run dev",
-    "lint": "turbo run lint",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "format:check": "prettier --check \"**/*.{ts,tsx,md}\"",
-    "type-check": "turbo run type-check",
+    "build": "turbo run build",
+    "start": "turbo run start",
     "db:generate": "turbo run db:generate",
     "db:migrate": "turbo run db:migrate",
     "db:seed": "turbo run db:seed",
+    "db:reset": "cd packages/db && pnpm prisma migrate reset --force",
+    "lint": "turbo run lint",
+    "type-check": "turbo run type-check",
+    "format": "prettier --write \"**/*.{ts,tsx,md,json}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,md,json}\"",
     "prepare": "husky install"
   },
   "devDependencies": {
     "@types/node": "^20.11.0",
-    "eslint": "^8.56.0",
     "@typescript-eslint/eslint-plugin": "^6.19.0",
     "@typescript-eslint/parser": "^6.19.0",
+    "eslint": "^8.56.0",
     "eslint-config-next": "14.1.0",
     "eslint-config-prettier": "^9.1.0",
     "husky": "^8.0.3",
@@ -26,5 +32,9 @@
     "prettier": "^3.2.4",
     "turbo": "^1.12.4",
     "typescript": "^5.3.3"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=8.0.0"
   }
 }

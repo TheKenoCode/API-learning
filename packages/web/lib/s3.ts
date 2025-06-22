@@ -11,9 +11,9 @@ const s3 = new AWS.S3({
 });
 
 export const BUCKETS = {
-  IMAGES: process.env.S3_BUCKET_IMAGES || "carhub-images",
-  MODELS: process.env.S3_BUCKET_MODELS || "carhub-models",
-  DOCUMENTS: process.env.S3_BUCKET_DOCUMENTS || "carhub-documents",
+  IMAGES: process.env.S3_BUCKET_IMAGES || "redline-images",
+  MODELS: process.env.S3_BUCKET_MODELS || "redline-models",
+  DOCUMENTS: process.env.S3_BUCKET_DOCUMENTS || "redline-documents",
 } as const;
 
 /**

@@ -39,8 +39,15 @@ export function TRPCReactProvider(props: { children: React.ReactNode }) {
           url: "/api/trpc",
           headers() {
             return {
-              // TODO: Add auth headers
+              // Include cookies in requests for server-side authentication
+              // Clerk uses cookies to maintain session state
             };
+          },
+          fetch(url, options) {
+            return fetch(url, {
+              ...options,
+              credentials: 'include', // This ensures cookies are sent with requests
+            });
           },
         }),
       ],

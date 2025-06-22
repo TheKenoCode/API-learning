@@ -37,10 +37,10 @@ export default function BrandIcon({ className }: BrandIconProps) {
       {/* Tire tread pattern */}
       {Array.from({ length: 12 }).map((_, i) => {
         const angle = i * 30 * (Math.PI / 180);
-        const startX = 32 + 27 * Math.cos(angle);
-        const startY = 32 + 27 * Math.sin(angle);
-        const endX = 32 + 21 * Math.cos(angle);
-        const endY = 32 + 21 * Math.sin(angle);
+        const startX = Math.round((32 + 27 * Math.cos(angle)) * 1000) / 1000;
+        const startY = Math.round((32 + 27 * Math.sin(angle)) * 1000) / 1000;
+        const endX = Math.round((32 + 21 * Math.cos(angle)) * 1000) / 1000;
+        const endY = Math.round((32 + 21 * Math.sin(angle)) * 1000) / 1000;
 
         return (
           <line
@@ -68,8 +68,8 @@ export default function BrandIcon({ className }: BrandIconProps) {
       {/* Bolt holes */}
       {Array.from({ length: 6 }).map((_, i) => {
         const angle = i * 60 * (Math.PI / 180);
-        const x = 32 + 14 * Math.cos(angle);
-        const y = 32 + 14 * Math.sin(angle);
+        const x = Math.round((32 + 14 * Math.cos(angle)) * 1000) / 1000;
+        const y = Math.round((32 + 14 * Math.sin(angle)) * 1000) / 1000;
 
         return (
           <circle

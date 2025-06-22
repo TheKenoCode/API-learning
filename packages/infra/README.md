@@ -1,4 +1,4 @@
-# CarHub Infrastructure 🐳
+# Redline Infrastructure 🐳
 
 Local development infrastructure using Docker Compose.
 
@@ -8,7 +8,7 @@ Local development infrastructure using Docker Compose.
 
 - **Image**: `postgres:16-alpine`
 - **Port**: `5432`
-- **Database**: `carhub`
+- **Database**: `redline`
 - **Credentials**: `postgres` / `postgres`
 
 ### pgAdmin (Database Admin)
@@ -16,7 +16,7 @@ Local development infrastructure using Docker Compose.
 - **Image**: `dpage/pgadmin4`
 - **Port**: `5050`
 - **URL**: http://localhost:5050
-- **Credentials**: `admin@carhub.com` / `admin`
+- **Credentials**: `admin@redline.com` / `admin`
 
 ### MinIO (S3-Compatible Storage)
 
@@ -85,19 +85,19 @@ pnpm db:seed
 
 The following buckets are automatically created:
 
-- `carhub-images` - Car photos and thumbnails
-- `carhub-models` - 3D car models (.glb files)
-- `carhub-documents` - PDFs and documents
+- `redline-images` - Car photos and thumbnails
+- `redline-models` - 3D car models (.glb files)
+- `redline-documents` - PDFs and documents
 
 ## pgAdmin Setup
 
 1. Open http://localhost:5050
-2. Login with `admin@carhub.com` / `admin`
+2. Login with `admin@redline.com` / `admin`
 3. Add new server:
-   - **Name**: CarHub Local
+   - **Name**: Redline Local
    - **Host**: `postgres` (container name)
    - **Port**: `5432`
-   - **Database**: `carhub`
+   - **Database**: `redline`
    - **Username**: `postgres`
    - **Password**: `postgres`
 
